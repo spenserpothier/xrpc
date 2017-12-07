@@ -1,1 +1,9 @@
 language: java
+install: true
+script:
+  - printenv
+  - gradle dependencies
+  - gradle verifyGoogleJavaFormat
+  - gradle check
+  - gradle test
+  - gradle build
