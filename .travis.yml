@@ -6,4 +6,3 @@ script:
   - gradle verifyGoogleJavaFormat
   - gradle check
   - gradle test
-  - gradle build
