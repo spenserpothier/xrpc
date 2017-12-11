@@ -1,9 +1,8 @@
 language: java
 install: true
 script:
-  - openssl aes-256-cbc -d -in key.gpg.enc -out key.gpg -k "$OPENSSL_PWD"
-  - gpg --import key.gpg
-  - rm key.gpg
+  - openssl aes-256-cbc -d -in key.gpg.enc -out ~/.gnupg/key.gpg -k "$OPENSSL_PWD"
+  - gpg --import ~/.gnupg/key.gpg
   - gradle dependencies
   - gradle verifyGoogleJavaFormat
   - gradle check
