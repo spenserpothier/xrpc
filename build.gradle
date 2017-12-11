@@ -18,9 +18,9 @@ release {
   preTagCommitMessage = 'Updating to release version '
   tagCommitMessage = 'New release: '
   newVersionCommitMessage = 'Creating new SNAPSHOT version '
-  git {
-    pushToRemote = 'upstream'
-  }
+//  git {
+//    pushToRemote = 'upstream'
+//  }
 }
 
 apply plugin: 'checkstyle'
@@ -90,6 +90,12 @@ artifacts {
 // Sign artifacts.
 signing {
     // Only sign release versions.
+    def keyId = rootProject.hasProperty('keyId') ? rootProject.keyId : System.getenv('GPG_KEY')
+    def password = rootProject.hasProperty('password') ? rootProject.keyId : System.getenv('GPG_PWD')
+    def secretKeyRingFile = rootProject.hasProperty('secretKeyRingFile') ? secretKeyRingFile : System.getenv('GPG_FILE')
+    allprojects { ext."signing.keyId" = keyId }
+    allprojects { ext."signing.password" = password }
+    allprojects { ext."signing.secretKeyRingFile" = secretKeyRingFile }
     required { !version.endsWith('-SNAPSHOT') }
     sign configurations.archives
 }
@@ -101,8 +107,8 @@ uploadArchives {
 
       // Safe aliases for username & password that don't require them to be set in order to load the
       // project.
-      def ossrhUsername = rootProject.hasProperty('ossrhUsername') ? rootProject.ossrhUsername : ''
-      def ossrhPassword = rootProject.hasProperty('ossrhPassword') ? rootProject.ossrhPassword : ''
+      def ossrhUsername = rootProject.hasProperty('ossrhUsername') ? rootProject.ossrhUsername : System.getenv('OSSRH_USER_TOKEN')
+      def ossrhPassword = rootProject.hasProperty('ossrhPassword') ? rootProject.ossrhPassword : System.getenv('OSSRH_PWD_TOKEN')
 
       repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
         authentication(userName: ossrhUsername, password: ossrhPassword)

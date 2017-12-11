@@ -1,7 +1,8 @@
 language: java
 install: true
 script:
-  - printenv
+  - openssl aes-256-cbc -d -in key.gpg.enc -out key.gpg -k "$OPENSSL_PWD"
+  - gpg --import key.gpg
   - gradle dependencies
   - gradle verifyGoogleJavaFormat
   - gradle check
