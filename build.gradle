@@ -18,9 +18,10 @@ release {
   preTagCommitMessage = 'Updating to release version '
   tagCommitMessage = 'New release: '
   newVersionCommitMessage = 'Creating new SNAPSHOT version '
-//  git {
+  git {
+      requireBranch = ''
 //    pushToRemote = 'upstream'
-//  }
+  }
 }
 
 apply plugin: 'checkstyle'
