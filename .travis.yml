@@ -28,8 +28,8 @@ before_deploy:
 deploy:
   provider: script
   script: gradle release -Prelease.useAutomaticVersion=true
-  on:
-    tags: false
+#  on:
+#    tags: false
 
 #branches:
 #  except:
