@@ -31,6 +31,6 @@ deploy:
   on:
     tags: false
 
-branches:
-  except:
-    - /^*-v[0-9]/
+#branches:
+#  except:
+#    - /^*-v[0-9]/
