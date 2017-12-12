@@ -1,5 +1,7 @@
 language: java
 install: true
+#before_script:
+#  - openssl aes-256-cbc -K $encrypted_062b2b2c35ee_key -iv $encrypted_062b2b2c35ee_iv -in github_deploy_key.enc -out github_deploy_key -d
 script:
   - openssl aes-256-cbc -d -in key.gpg.enc -out $GPG_FILE -k "$OPENSSL_PWD"
   - gpg --import $GPG_FILE
@@ -7,4 +9,28 @@ script:
   - gradle verifyGoogleJavaFormat
   - gradle check
   - gradle test
-  - gradle release -Prelease.useAutomaticVersion=true
+after_success:
+  - |
+    declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/XXXXX)"
+    openssl aes-256-cbc \
+             -K $encrypted_062b2b2c35ee_key \
+             -iv $encrypted_062b2b2c35ee_iv \
+             -in ".travis/github_deploy_key.enc" \
+             -out "$SSH_FILE" -d
+    chmod 600 "$SSH_FILE" \
+             && printf "%s\n" \
+                  "Host github.com" \
+                  "  IdentityFile $SSH_FILE" \
+                  "  LogLevel ERROR" >> ~/.ssh/config
+before_deploy:
+  - git config --global user.email "sisyphus@nordstrom.com"
+  - git config --global user.name "Sisyphus - Travis CI Builds"
+deploy:
+  provider: script
+  script: gradle release -Prelease.useAutomaticVersion=true
+  on:
+    tags: false
+
+branches:
+  except:
+    - /^*-v[0-9]/
