@@ -26,7 +26,7 @@ before_deploy:
   - git config --global user.email "sisyphus@nordstrom.com"
   - git config --global user.name "Sisyphus - Travis CI Builds"
   - git remote rm origin
-  - get remote add origin 'git@github.com:spenserpothier/xrpc.git'
+  - git remote add origin 'git@github.com:spenserpothier/xrpc.git'
 deploy:
   provider: script
   script: gradle release -Prelease.useAutomaticVersion=true
