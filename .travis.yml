@@ -1,15 +1,25 @@
 language: java
 install: true
 script:
-  - ./gradlew clean
-  - ./gradlew check
-  - ./gradlew build
+  - ./gradlew clean check publishToMavenLocal
 before_deploy:
   - git config --global user.email "sisyphus@nordstrom.com"
   - git config --global user.name "Sisyphus - Travis CI Builds"
   - git remote rm origin
   - git remote add origin 'git@github.com:spenserpothier/xrpc.git'
+  - sed -i 's/VERSION_NUMBER/'$(./gradlew properties | grep "version:" | awk '{print $2}')'/g' .travis/bintray_descriptor.json
+  - sed -i 's/RELEASE_DATE/'$(date +%Y-%m-%d)'/g' .travis/bintray_descriptor.json
 deploy:
   - provider: script
     skip_cleanup: true
     script: ./bin/publish.sh
+  - provider: bintray
+    skip_cleanup: true
+    file: .travis/bintray_descriptor.json
+    user: sisyphus
+    key:
+      secure: "pQRCVwVadjrADJyPSiiqM6G8ZPa87zepFSdToLmFiTKEhLqmD/Hw0h0I+YxzWLAywcsEgYjrOUTRUO+GMwFo+HUckVTkGjrV/SEwrOye8/2Ls92t+eD2yLT49sKyWj01Y82j400qUD9Ezx9Jj5xZIYc8/RwoNfUK3xP23k7b4R+BxyN3Fsio/Yh/lajJI5Z0QTSh6NOu40oMiNkZ1clkQ31NflBXK779EwiuWgmMEZoLa5ToPlLluas2TscpbR6wmKw5b1TJLj7WdjBwMJBAecyqFgf4Klu2yLoN4s8i9Ch6EAoFr4H6YHfGgFmpW1Sqr/x6B9apK9hqCcpIR7a3Ym8nkFQQ6uzcVMjAQkM7Yk3Fip5mM3Npj42l2xzt3uCf/ajpOtw75j9fHiX6ljqLiNlaqviQQ2woxwu0dUcX8TN3OWU8p82OSdXfCSASaPOrfpH621aCJ14727zrGHfff9EqVnj2vrnATOeD6ZvklrLHVjlEwvTdHRvbIx/7FA6LhXGGvf4uMlJFGvTuDn8bl9AG9avR+XkQx8Xiaglv92NZSE1ZuD4y61rfq14jLfBH3VboR3FQz/kgcspQN+RUIB5MOMq5vv/hPqRpp8K2IEsc7QLI9OuTlUT+fLhWsSpmMSVP+OHtsEP6z4EeBzGAjUk4idmzMWAKeuzr2BQMJ+4="
+    dry-run: true
+    on:
+      branch: master
+      tags: true
